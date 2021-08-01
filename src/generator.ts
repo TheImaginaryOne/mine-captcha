@@ -19,6 +19,45 @@ function randInteger(a: number, b: number) {
   return Math.floor((b - a) * Math.random() + a);
 }
 
+/**
+ * Add a mine, updating the board of counts.
+ */
+function addMine(board: Grid<number>, a: number, b: number) {
+  for (let x = Math.max(a-1, 0); x <= Math.min(a+1, board.width - 1); x++) {
+    for (let y = Math.max(b-1, 0); y <= Math.min(b+1, board.height - 1); y++) {
+      board.set(x, y, board.get(x, y) + 1);
+    }
+  }
+}
+
+/**
+ * Is the selected mines (selected by the user) a valid selection
+ * for the given board of counts?
+ */
+export function verifyAnswer(selected: Grid<boolean>, board: Grid<number>) {
+  // TODO assert same size???
+  let width = selected.width;
+  let height = selected.height;
+  const proposedBoard = Grid.fill(width, height, 0);
+  for (let i = 0; i < width; i++) {
+    for (let j = 0; j < height; j++) {
+      if (selected.get(i, j)) {
+        addMine(proposedBoard, i, j);
+      }
+    }
+  }
+  for (let i = 0; i < width; i++) {
+    for (let j = 0; j < height; j++) {
+      let realCount = board.get(i, j);
+      if (realCount !== null 
+          && proposedBoard.get(i, j) !== realCount) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 export function generateBoard(size: number): Grid<number> {
   const totalSquares = size * size;
   let nums = new Array(totalSquares);
@@ -33,11 +72,7 @@ export function generateBoard(size: number): Grid<number> {
     let x = nums[i];
     let a = x % size;
     let b = Math.floor(x / size);
-    for (let x = Math.max(a-1, 0); x <= Math.min(a+1, size - 1); x++) {
-      for (let y = Math.max(b-1, 0); y <= Math.min(b+1, size - 1); y++) {
-        board.set(x, y, board.get(x, y) + 1);
-      }
-    }
+    addMine(board, a, b);
   }
   // how many square should be blank? 
   // (excluding mine squares, which are blank anyway)

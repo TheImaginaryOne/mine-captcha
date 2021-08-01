@@ -72,9 +72,12 @@ interface Props {
   selection: Grid<boolean>;
   content: Grid<number>;
   onSquareClick: (x: number, y: number) => void;
+  onVerifyClick: () => void;
 }
 
-export default function GameInterface({ selection, content, onSquareClick } : Props) {
+export default function GameInterface(
+  { selection, content, onSquareClick, onVerifyClick } : Props
+) {
   const cells = new Array(16);
   for (let i = 0; i < 4; i++) {
     for (let j = 0; j < 4; j++) {
@@ -98,7 +101,7 @@ export default function GameInterface({ selection, content, onSquareClick } : Pr
     { cells }
     </GridWrapper>
     <div>
-      <SubmitButton>Verify</SubmitButton>
+      <SubmitButton onClick={(_) => onVerifyClick()}>Verify</SubmitButton>
     </div>
   </InterfaceWrapper>
   );

@@ -1,7 +1,7 @@
 import styled, { ThemeProvider } from 'styled-components';
 import GameInterface from './GameInterface';
 import { useState } from 'react';
-import { generateBoard }  from './generator';
+import { verifyAnswer, generateBoard }  from './generator';
 import Grid from './grid';
 
 const theme = {
@@ -40,9 +40,10 @@ const Header = () => (
 
 interface MainScreenProps {
   board: Grid<number>;
+  onVerifyClick: (grid: Grid<boolean>) => void;
 }
 
-function MainScreen({ board }: MainScreenProps) {
+function MainScreen({ board, onVerifyClick }: MainScreenProps) {
   const [selection, setSelection] = useState(Grid.fill(4, 4, false));
   const onSquareClick = (x: number, y: number) => {
     const newArray = Grid.from(selection);
@@ -56,7 +57,8 @@ function MainScreen({ board }: MainScreenProps) {
         <GameInterface
           selection={selection}
           content={board}
-          onSquareClick={onSquareClick}/>
+          onSquareClick={onSquareClick}
+          onVerifyClick={() => onVerifyClick(selection)}/>
       </FrameWrapper>
     </ThemeProvider>
   );
@@ -64,7 +66,8 @@ function MainScreen({ board }: MainScreenProps) {
 
 enum CaptchaState {
   NOT_DONE,
-  IN_PROGRESS
+  IN_PROGRESS,
+  DONE
 }
 
 export default function Captcha() {
@@ -76,11 +79,17 @@ export default function Captcha() {
     setCaptchaState(CaptchaState.IN_PROGRESS);
   }
 
+  function onVerifyClick(selection: Grid<boolean>) {
+    if (verifyAnswer(selection, board!)) {
+      setCaptchaState(CaptchaState.DONE);
+    }
+  }
+
   return (
   <div>
     <button onClick={onClick}>Mine CAPTCHA</button>
     { captchaState === CaptchaState.IN_PROGRESS &&
-      <MainScreen board={board!}/>
+      <MainScreen board={board!} onVerifyClick={onVerifyClick}/>
     }
   </div>
   );
