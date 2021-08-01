@@ -5,8 +5,9 @@ import { generateBoard }  from './generator';
 import Grid from './grid';
 
 const theme = {
-  primaryColor: "#1490c9",
-  fontFamily: "arial, san-serif"
+  primaryColor: "#4A91DA",
+  fontFamily: "arial, san-serif",
+  gameColors: ["#444444", "#4A91DA", "#579C6E", "#D6614D"]
 }
 
 const FrameWrapper = styled.div`

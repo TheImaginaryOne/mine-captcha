@@ -15,6 +15,22 @@ gap: 4px;
 margin-bottom: 8px;
 `
 
+
+interface GridCellTextProps {
+  colorIndex: number;
+  theme: any;
+}
+
+const getColor = ({ colorIndex, theme }: GridCellTextProps) => 
+  colorIndex > 3 ? theme.gameColors[3] : theme.gameColors[colorIndex]
+
+const GridCellText = styled.span`
+font-size: 48px;
+font-weight: bold;
+text-align: center;
+color: ${getColor};
+`
+
 interface GridCellProps {
   isSelected: boolean;
   theme: any;
@@ -23,9 +39,6 @@ interface GridCellProps {
 const GridCell = styled.div`
 background-color: #dddddd;
 transition: border-color 0.1s;
-font-size: 48px;
-font-weight: bold;
-text-align: center;
 
 display: flex;
 justify-content: center;
@@ -65,11 +78,16 @@ export default function GameInterface({ selection, content, onSquareClick } : Pr
   const cells = new Array(16);
   for (let i = 0; i < 4; i++) {
     for (let j = 0; j < 4; j++) {
+      const cellNumber = content.get(i, j);
       cells[i + j * 4] = 
         <GridCell key={`${i}:${j}`} 
           onClick={() => onSquareClick(i, j)}
           isSelected={selection.get(i, j)}>
-          { content.get(i, j) }
+          { cellNumber !== null &&
+            <GridCellText colorIndex={cellNumber}>
+              { content.get(i, j) }
+            </GridCellText>
+          }
         </GridCell>
       ;
     }
