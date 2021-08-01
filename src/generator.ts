@@ -65,7 +65,7 @@ export function generateBoard(size: number): Grid<number> {
     nums[i] = i;
   }
   nums = shuffle(nums);
-  let numMines = randInteger(totalSquares / 8, totalSquares / 3 + 1);
+  let numMines = randInteger(totalSquares / 4, totalSquares / 3 + 1);
 
   const board = Grid.fill(size, size, 0);
   for (let i = 0; i < numMines; i++) {
@@ -76,7 +76,7 @@ export function generateBoard(size: number): Grid<number> {
   }
   // how many square should be blank? 
   // (excluding mine squares, which are blank anyway)
-  let numBlankSquares = randInteger(totalSquares / 8, totalSquares / 4 + 1);
+  let numBlankSquares = totalSquares / 4;
   for (let i = 0; i < numMines + numBlankSquares; i++) {
     let x = nums[i];
     let a = x % size;
