@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import Grid from './grid';
 
 const InterfaceWrapper = styled.div`
 padding: 8px;
@@ -22,6 +23,14 @@ interface GridCellProps {
 const GridCell = styled.div`
 background-color: #dddddd;
 transition: border-color 0.1s;
+font-size: 48px;
+font-weight: bold;
+text-align: center;
+
+display: flex;
+justify-content: center;
+align-content: center;
+flex-direction: column;
 ${({ isSelected, theme }: GridCellProps) => 
   isSelected ? 
     "border: 4px solid " + theme.primaryColor :
@@ -47,20 +56,28 @@ color: #ffffff;
 `;
 
 interface Props {
-  selection: boolean[];
-  onSquareClick: (key: number) => void;
+  selection: Grid<boolean>;
+  content: Grid<number>;
+  onSquareClick: (x: number, y: number) => void;
 }
 
-export default function GameInterface({ selection, onSquareClick } : Props) {
+export default function GameInterface({ selection, content, onSquareClick } : Props) {
+  const cells = new Array(16);
+  for (let i = 0; i < 4; i++) {
+    for (let j = 0; j < 4; j++) {
+      cells[i + j * 4] = 
+        <GridCell key={`${i}:${j}`} 
+          onClick={() => onSquareClick(i, j)}
+          isSelected={selection.get(i, j)}>
+          { content.get(i, j) }
+        </GridCell>
+      ;
+    }
+  }
   return (
   <InterfaceWrapper>
     <GridWrapper>
-      { selection.map((state, key) => (
-        <GridCell key={key} 
-          onClick={() => onSquareClick(key)}
-          isSelected={selection[key]}>
-        </GridCell>
-      )) }
+    { cells }
     </GridWrapper>
     <div>
       <SubmitButton>Verify</SubmitButton>

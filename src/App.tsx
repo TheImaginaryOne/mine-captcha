@@ -1,10 +1,10 @@
 import React from 'react';
-import MainScreen from './MainScreen';
+import Captcha from './Captcha';
 
 function App() {
   return (
     <div className="App">
-      <MainScreen />
+      <Captcha />
     </div>
   );
 }
