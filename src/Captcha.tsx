@@ -53,7 +53,9 @@ interface MainScreenProps {
 }
 
 function MainScreen({ board, onVerifyClick }: MainScreenProps) {
-  const [selection, setSelection] = useState(Grid.fill(4, 4, false));
+  const [selection, setSelection] = useState(
+    Grid.fill(board.width, board.height, false)
+  );
   const onSquareClick = (x: number, y: number) => {
     const newArray = Grid.from(selection);
     newArray.set(x, y, !newArray.get(x, y));
@@ -81,8 +83,10 @@ export default function Captcha() {
   const [board, setBoard] = useState<Grid<number> | null>(null);
   const [captchaState, setCaptchaState] = useState(CaptchaState.NOT_DONE);
 
+  const gridSize = 4;
+
   const onClick = () => {
-    setBoard(generateBoard(4));
+    setBoard(generateBoard(gridSize));
     setCaptchaState(CaptchaState.IN_PROGRESS);
   }
 

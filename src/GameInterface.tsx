@@ -5,10 +5,12 @@ const InterfaceWrapper = styled.div`
 padding: 8px;
 `
 
+const cols = ({ numColumns }: { numColumns: number }) => numColumns;
+
 const GridWrapper = styled.div`
 background-color: #ffffff;
 display: grid;
-grid-template-columns: repeat(4, 1fr);
+grid-template-columns: repeat(${cols}, 1fr);
 grid-auto-rows: 1fr;
 aspect-ratio: 1;
 gap: 4px;
@@ -19,13 +21,14 @@ margin-bottom: 8px;
 interface GridCellTextProps {
   colorIndex: number;
   theme: any;
+  fontSize: number;
 }
 
 const getColor = ({ colorIndex, theme }: GridCellTextProps) => 
   colorIndex > 3 ? theme.gameColors[3] : theme.gameColors[colorIndex]
 
 const GridCellText = styled.span`
-font-size: 48px;
+font-size: ${({ fontSize }: GridCellTextProps) => fontSize}px;
 font-weight: bold;
 text-align: center;
 color: ${getColor};
@@ -78,16 +81,20 @@ interface Props {
 export default function GameInterface(
   { selection, content, onSquareClick, onVerifyClick } : Props
 ) {
+  const width = selection.width;
+  const height = selection.height;
   const cells = new Array(16);
-  for (let i = 0; i < 4; i++) {
-    for (let j = 0; j < 4; j++) {
+  for (let i = 0; i < width; i++) {
+    for (let j = 0; j < height; j++) {
       const cellNumber = content.get(i, j);
-      cells[i + j * 4] = 
+      cells[i + j * width] = 
         <GridCell key={`${i}:${j}`} 
           onClick={() => onSquareClick(i, j)}
           isSelected={selection.get(i, j)}>
           { cellNumber !== null &&
-            <GridCellText colorIndex={cellNumber}>
+            <GridCellText 
+              fontSize={Math.floor(150 / width)}
+              colorIndex={cellNumber}>
               { content.get(i, j) }
             </GridCellText>
           }
@@ -97,7 +104,7 @@ export default function GameInterface(
   }
   return (
   <InterfaceWrapper>
-    <GridWrapper>
+    <GridWrapper numColumns={width}>
     { cells }
     </GridWrapper>
     <div>
