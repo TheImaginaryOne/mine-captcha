@@ -1,14 +1,23 @@
 import styled, { ThemeProvider } from 'styled-components';
-import GameInterface from './GameInterface';
 import { useState } from 'react';
+import { animated, Transition } from 'react-spring';
 import { verifyAnswer, generateBoard }  from './generator';
 import Grid from './grid';
+import GameInterface from './GameInterface';
+import CaptchaButton from './CaptchaButton';
 
 const theme = {
   primaryColor: "#4A91DA",
   fontFamily: "arial, san-serif",
   gameColors: ["#444444", "#4A91DA", "#579C6E", "#D6614D"]
 }
+
+const DialogWrapper = styled(animated.div)`
+position: relative;
+top: -50px;
+left: 200px;
+display: inline-block;
+`
 
 const FrameWrapper = styled.div`
 width: 300px;
@@ -51,16 +60,14 @@ function MainScreen({ board, onVerifyClick }: MainScreenProps) {
     setSelection(newArray);
   };
   return (
-    <ThemeProvider theme={theme}>
-      <FrameWrapper>
-        <Header />
-        <GameInterface
-          selection={selection}
-          content={board}
-          onSquareClick={onSquareClick}
-          onVerifyClick={() => onVerifyClick(selection)}/>
-      </FrameWrapper>
-    </ThemeProvider>
+    <FrameWrapper>
+      <Header />
+      <GameInterface
+        selection={selection}
+        content={board}
+        onSquareClick={onSquareClick}
+        onVerifyClick={() => onVerifyClick(selection)}/>
+    </FrameWrapper>
   );
 }
 
@@ -85,12 +92,26 @@ export default function Captcha() {
     }
   }
 
+  const showDialog = captchaState === CaptchaState.IN_PROGRESS;
+
   return (
-  <div>
-    <button onClick={onClick}>Mine CAPTCHA</button>
-    { captchaState === CaptchaState.IN_PROGRESS &&
-      <MainScreen board={board!} onVerifyClick={onVerifyClick}/>
-    }
-  </div>
+    <ThemeProvider theme={theme}>
+      <div>
+        <CaptchaButton isDone={captchaState === CaptchaState.DONE} onClick={onClick} />
+        <Transition
+          items={showDialog}
+          config={{ mass: 0.1, tension: 200 }}
+          from = {{ opacity: 0 }}
+          enter = {{ opacity: 1 }}
+          leave = {{ opacity: 0 }}>
+          { (styles, show) =>
+            show &&
+              <DialogWrapper style={styles}>
+                <MainScreen board={board!} onVerifyClick={onVerifyClick}/>
+              </DialogWrapper>
+          }
+        </Transition>
+      </div>
+    </ThemeProvider>
   );
 }
