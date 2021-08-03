@@ -1,5 +1,5 @@
 import styled, { ThemeProvider } from 'styled-components';
-import { useState } from 'react';
+import { useState, useImperativeHandle, forwardRef, useEffect } from 'react';
 import { animated, Transition } from 'react-spring';
 import { verifyAnswer, generateBoard }  from './generator';
 import Grid from './grid';
@@ -56,6 +56,9 @@ function MainScreen({ board, onVerifyClick }: MainScreenProps) {
   const [selection, setSelection] = useState(
     Grid.fill(board.width, board.height, false)
   );
+  useEffect(() => {
+    setSelection(Grid.fill(board.width, board.height, false))
+  }, [board.width, board.height]);
   const onSquareClick = (x: number, y: number) => {
     const newArray = Grid.from(selection);
     newArray.set(x, y, !newArray.get(x, y));
@@ -79,16 +82,29 @@ enum CaptchaState {
   DONE
 }
 
-export default function Captcha() {
+interface CaptchaProps {
+  gridSize: number;
+}
+
+export interface CaptchaHandle {
+  reset: () => void;
+}
+
+export const Captcha = forwardRef<CaptchaHandle, CaptchaProps>((props, ref) => {
   const [board, setBoard] = useState<Grid<number> | null>(null);
   const [captchaState, setCaptchaState] = useState(CaptchaState.NOT_DONE);
 
-  const gridSize = 4;
-
   const onClick = () => {
-    setBoard(generateBoard(gridSize));
+    setBoard(generateBoard(props.gridSize));
     setCaptchaState(CaptchaState.IN_PROGRESS);
   }
+
+  const reset = () => {
+    setCaptchaState(CaptchaState.NOT_DONE);
+  }
+  const obj = { reset };
+  // expose callback
+  useImperativeHandle(ref, () => obj);
 
   function onVerifyClick(selection: Grid<boolean>) {
     if (verifyAnswer(selection, board!)) {
@@ -99,8 +115,8 @@ export default function Captcha() {
   const showDialog = captchaState === CaptchaState.IN_PROGRESS;
 
   return (
-    <ThemeProvider theme={theme}>
-      <div>
+    <div>
+      <ThemeProvider theme={theme}>
         <CaptchaButton isDone={captchaState === CaptchaState.DONE} onClick={onClick} />
         <Transition
           items={showDialog}
@@ -115,7 +131,8 @@ export default function Captcha() {
               </DialogWrapper>
           }
         </Transition>
-      </div>
-    </ThemeProvider>
+      </ThemeProvider>
+    </div>
   );
-}
+})
+

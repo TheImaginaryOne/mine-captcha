@@ -83,7 +83,8 @@ export default function GameInterface(
 ) {
   const width = selection.width;
   const height = selection.height;
-  const cells = new Array(16);
+  const cells = new Array(width * height);
+  console.log(width);
   for (let i = 0; i < width; i++) {
     for (let j = 0; j < height; j++) {
       const cellNumber = content.get(i, j);
