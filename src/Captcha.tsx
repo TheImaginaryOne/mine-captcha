@@ -8,15 +8,31 @@ import CaptchaButton from './CaptchaButton';
 
 const theme = {
   primaryColor: "#4A91DA",
-  fontFamily: "arial, san-serif",
+  fontFamily: "\"Roboto\", arial, san-serif",
   gameColors: ["#444444", "#4A91DA", "#579C6E", "#D6614D"]
 }
 
 const DialogWrapper = styled(animated.div)`
 position: relative;
-top: -50px;
+top: -100px;
 left: 200px;
 display: inline-block;
+z-index: 999;
+`
+
+const DismissFrame = styled.div`
+position: absolute;
+top: 0;
+left: 0;
+bottom: 0;
+right: 0;
+width: 100%;
+`
+
+const AbsDiv = styled.div`
+position: absolute;
+width: 0;
+height: 0;
 `
 
 const FrameWrapper = styled.div`
@@ -118,6 +134,7 @@ export const Captcha = forwardRef<CaptchaHandle, CaptchaProps>((props, ref) => {
     <div>
       <ThemeProvider theme={theme}>
         <CaptchaButton isDone={captchaState === CaptchaState.DONE} onClick={onClick} />
+        { showDialog && <DismissFrame onClick={reset}/> }
         <Transition
           items={showDialog}
           config={{ mass: 0.1, tension: 200 }}
@@ -126,9 +143,13 @@ export const Captcha = forwardRef<CaptchaHandle, CaptchaProps>((props, ref) => {
           leave = {{ opacity: 0 }}>
           { (styles, show) =>
             show &&
+            <>
+            <AbsDiv>
               <DialogWrapper style={styles}>
                 <MainScreen board={board!} onVerifyClick={onVerifyClick}/>
               </DialogWrapper>
+            </AbsDiv>
+            </>
           }
         </Transition>
       </ThemeProvider>

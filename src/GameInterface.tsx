@@ -2,13 +2,13 @@ import styled from 'styled-components';
 import Grid from './grid';
 
 const InterfaceWrapper = styled.div`
+background-color: #ffffff;
 padding: 8px;
 `
 
 const cols = ({ numColumns }: { numColumns: number }) => numColumns;
 
 const GridWrapper = styled.div`
-background-color: #ffffff;
 display: grid;
 grid-template-columns: repeat(${cols}, 1fr);
 grid-auto-rows: 1fr;
@@ -64,7 +64,8 @@ border: none;
 border-radius: 4px;
 font-size: 16px;
 font-family: ${({theme}) => theme.fontFamily};
-padding: 8px 16px;
+font-weight: 500;
+padding: 12px 16px;
 color: #ffffff;
 :hover {
     filter: brightness(90%);
@@ -109,7 +110,7 @@ export default function GameInterface(
     { cells }
     </GridWrapper>
     <div>
-      <SubmitButton onClick={(_) => onVerifyClick()}>Verify</SubmitButton>
+      <SubmitButton onClick={(_) => onVerifyClick()}>VERIFY</SubmitButton>
     </div>
   </InterfaceWrapper>
   );

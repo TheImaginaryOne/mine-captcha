@@ -31,8 +31,8 @@ const Checkbox = styled.div`
 border: 2px solid #cccccc;
 background-color: #ffffff;
 border-radius: 2px;
-width: 32px;
-height: 32px;
+width: 28px;
+height: 28px;
 `
 
 interface Props {
