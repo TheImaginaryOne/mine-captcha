@@ -6,6 +6,7 @@ border: 1px solid #cccccc;
 background-color: #fafafa;
 border-radius: 4px;
 padding: 16px;
+height: 32px;
 width: 300px;
 display: flex;
 flex-direction: row;
@@ -23,8 +24,14 @@ font-family: ${({theme}) => theme.fontFamily};
 color: #444444;
 `
 
+const MiddleSection = styled.div`
+flex: 1;
+`
+
 const LeftSection = styled.div`
 padding-right: 16px;
+width: 32px;
+height: 32px;
 `
 
 const Checkbox = styled.div`
@@ -38,6 +45,16 @@ height: 28px;
 interface Props {
   onClick: () => void;
   isDone: boolean;
+}
+
+function Image() {
+  const Logo = styled.img`
+    width: 40px;
+    height: 40px;
+  `
+  return (
+    <Logo src="./UncoveredMine.png" alt="Minesweeper Logo" />
+  );
 }
 
 function Tick() {
@@ -73,9 +90,12 @@ export default function CaptchaButton({ isDone, onClick }: Props) {
         <Checkbox />
       }
       </LeftSection>
-      <Text>
-        I am a robot
-      </Text>
+      <MiddleSection>
+        <Text>
+          I am a robot
+        </Text>
+      </MiddleSection>
+      <Image />
     </ButtonContainer>
   )
 }
