@@ -83,6 +83,18 @@ export function generateBoard(size: number): Grid<number> {
     let b = Math.floor(x / size);
     board.set(a, b, null);
   }
+  // Some squares will have '0'. Blank out those squares
+  // (because '0' does not typically appear in Minesweeper.)
+  // In real Minesweeper, EVERY square with '0' will be indicated
+  // but we will not indicate them here.
+  for (let i = 0; i < size; i++) {
+    for (let j = 0; j < size; j++) {
+      let count = board.get(i, j);
+      if (count === 0) {
+        board.set(i, j, null);
+      }
+    }
+  }
 
   return board;
 }
