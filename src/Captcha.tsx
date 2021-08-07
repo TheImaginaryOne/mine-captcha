@@ -8,6 +8,7 @@ import CaptchaButton from './CaptchaButton';
 
 const theme = {
   primaryColor: "#4A91DA",
+  errorColor: "#D6614D",
   fontFamily: "\"Roboto\", arial, san-serif",
   gameColors: ["#444444", "#4A91DA", "#579C6E", "#D6614D"]
 }
@@ -65,16 +66,17 @@ const Header = () => (
 
 interface MainScreenProps {
   board: Grid<number>;
-  onVerifyClick: (grid: Grid<boolean>) => void;
+  onVerifyClick: (grid: Grid<boolean>) => boolean;
+  isIncorrect: boolean;
 }
 
-function MainScreen({ board, onVerifyClick }: MainScreenProps) {
+function MainScreen({ isIncorrect, board, onVerifyClick }: MainScreenProps) {
   const [selection, setSelection] = useState(
     Grid.fill(board.width, board.height, false)
   );
   useEffect(() => {
     setSelection(Grid.fill(board.width, board.height, false))
-  }, [board.width, board.height]);
+  }, [board]);
   const onSquareClick = (x: number, y: number) => {
     const newArray = Grid.from(selection);
     newArray.set(x, y, !newArray.get(x, y));
@@ -87,7 +89,9 @@ function MainScreen({ board, onVerifyClick }: MainScreenProps) {
         selection={selection}
         content={board}
         onSquareClick={onSquareClick}
-        onVerifyClick={() => onVerifyClick(selection)}/>
+        isIncorrect={isIncorrect}
+        onVerifyClick={() => onVerifyClick(selection)}
+        />
     </FrameWrapper>
   );
 }
@@ -109,9 +113,11 @@ export interface CaptchaHandle {
 export const Captcha = forwardRef<CaptchaHandle, CaptchaProps>((props, ref) => {
   const [board, setBoard] = useState<Grid<number> | null>(null);
   const [captchaState, setCaptchaState] = useState(CaptchaState.NOT_DONE);
+  const [isIncorrect, setIncorrect] = useState(false);
 
   const onClick = () => {
     setBoard(generateBoard(props.gridSize));
+    setIncorrect(false); // reset
     setCaptchaState(CaptchaState.IN_PROGRESS);
   }
 
@@ -125,6 +131,10 @@ export const Captcha = forwardRef<CaptchaHandle, CaptchaProps>((props, ref) => {
   function onVerifyClick(selection: Grid<boolean>) {
     if (verifyAnswer(selection, board!)) {
       setCaptchaState(CaptchaState.DONE);
+      return true;
+    } else {
+      setIncorrect(true);
+      return false;
     }
   }
 
@@ -146,7 +156,10 @@ export const Captcha = forwardRef<CaptchaHandle, CaptchaProps>((props, ref) => {
             <>
             <AbsDiv>
               <DialogWrapper style={styles}>
-                <MainScreen board={board!} onVerifyClick={onVerifyClick}/>
+                <MainScreen 
+                  board={board!}
+                  isIncorrect={isIncorrect}
+                  onVerifyClick={onVerifyClick}/>
               </DialogWrapper>
             </AbsDiv>
             </>

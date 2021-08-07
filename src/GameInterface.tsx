@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 import Grid from './grid';
+import { useState, useEffect } from 'react';
+import { useSpring, animated } from 'react-spring';
 
 const InterfaceWrapper = styled.div`
 background-color: #ffffff;
@@ -72,16 +74,33 @@ color: #ffffff;
 }
 `;
 
+const ErrorText = styled.span`
+font-size: 16px;
+color: ${({theme}) => theme.errorColor};
+`
+
+const RowFlex = styled.div`
+display: flex;
+flex-direction: row;
+align-items: center;
+`
+
+const MarginRight = styled.div`
+margin-right: 16px;
+`
+
 interface Props {
   selection: Grid<boolean>;
   content: Grid<number>;
   onSquareClick: (x: number, y: number) => void;
-  onVerifyClick: () => void;
+  onVerifyClick: () => boolean;
+  isIncorrect: boolean;
 }
 
 export default function GameInterface(
-  { selection, content, onSquareClick, onVerifyClick } : Props
+  { selection, content, onSquareClick, onVerifyClick, isIncorrect } : Props
 ) {
+  const [shakeButton, setShakeButton] = useState(false);
   const width = selection.width;
   const height = selection.height;
   const cells = new Array(width * height);
@@ -104,14 +123,40 @@ export default function GameInterface(
       ;
     }
   }
+
+  useEffect(() => {
+    if (shakeButton) {
+      const timeout = window.setTimeout(() => setShakeButton(false), 50);
+      return () => window.clearTimeout(timeout);
+    }
+  }, [shakeButton]);
+
+  const x = useSpring({
+    transform: `translate3d(${shakeButton ? 10 : 0}px, 0px, 0px)`,
+    config: {
+      friction: 10,
+      tension: 700
+    }
+  });
+
   return (
   <InterfaceWrapper>
     <GridWrapper numColumns={width}>
     { cells }
     </GridWrapper>
-    <div>
-      <SubmitButton onClick={(_) => onVerifyClick()}>VERIFY</SubmitButton>
-    </div>
+    <RowFlex>
+      <MarginRight>
+        <animated.div style={x}>
+          <SubmitButton onClick={(_) => {
+            let correct = onVerifyClick();
+            setShakeButton(!correct);
+          }} >
+            VERIFY
+          </SubmitButton>
+        </animated.div>
+      </MarginRight>
+      { isIncorrect && <ErrorText>Incorrect answer</ErrorText> }
+    </RowFlex>
   </InterfaceWrapper>
   );
 }
